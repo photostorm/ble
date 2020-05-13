@@ -44,7 +44,7 @@ func NewHCI(smp SmpManagerFactory, opts ...ble.Option) (*HCI, error) {
 		muSent:    sync.Mutex{},
 
 		muOps:  sync.RWMutex{},
-		opSync: make(map[int]sync.Mutex),
+		opSync: make(map[int]*sync.Mutex),
 
 		evth: map[int]handlerFn{},
 		subh: map[int]handlerFn{},
@@ -85,7 +85,7 @@ type HCI struct {
 	sent      map[int]*pkt
 
 	muOps  sync.RWMutex
-	opSync map[int]sync.Mutex
+	opSync map[int]*sync.Mutex
 
 	// evtHub
 	evth map[int]handlerFn
@@ -309,7 +309,7 @@ func (h *HCI) lockOp(op int) {
 		h.muOps.Unlock()
 		l.Lock()
 	} else {
-		m := sync.Mutex{}
+		m := &sync.Mutex{}
 		h.opSync[op] = m
 		h.muOps.Unlock()
 		m.Lock()
