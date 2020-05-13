@@ -43,6 +43,9 @@ func NewHCI(smp SmpManagerFactory, opts ...ble.Option) (*HCI, error) {
 		sent:      make(map[int]*pkt),
 		muSent:    sync.Mutex{},
 
+		muOps:  sync.RWMutex{},
+		opSync: make(map[int]sync.Mutex),
+
 		evth: map[int]handlerFn{},
 		subh: map[int]handlerFn{},
 
@@ -80,6 +83,9 @@ type HCI struct {
 	chCmdBufs chan []byte
 	muSent    sync.Mutex
 	sent      map[int]*pkt
+
+	muOps  sync.RWMutex
+	opSync map[int]sync.Mutex
 
 	// evtHub
 	evth map[int]handlerFn
@@ -295,8 +301,39 @@ func (h *HCI) init() error {
 	return h.err
 }
 
+func (h *HCI) lockOp(op int) {
+	h.muOps.Lock()
+
+	l, ok := h.opSync[op]
+	if ok {
+		h.muOps.Unlock()
+		l.Lock()
+	} else {
+		m := sync.Mutex{}
+		h.opSync[op] = m
+		h.muOps.Unlock()
+		m.Lock()
+	}
+}
+
+func (h *HCI) unlockOp(op int) error {
+	h.muOps.RLock()
+	l, ok := h.opSync[op]
+	if !ok {
+		return fmt.Errorf("no mutex exists for %v", op)
+	}
+	h.muOps.RUnlock()
+
+	l.Unlock()
+
+	return nil
+}
+
 // Send ...
 func (h *HCI) Send(c Command, r CommandRP) error {
+	h.lockOp(c.OpCode())
+	defer h.unlockOp(c.OpCode())
+
 	b, err := h.send(c)
 	if err != nil {
 		return err
