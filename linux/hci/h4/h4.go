@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jacobsa/go-serial/serial"
 	"github.com/pkg/errors"
 )
 
@@ -30,50 +29,6 @@ type h4 struct {
 
 	done chan int
 	cmu  sync.Mutex
-}
-
-func DefaultSerialOptions() serial.OpenOptions {
-	return serial.OpenOptions{
-		PortName:              "/dev/ttyACM0",
-		BaudRate:              1000000,
-		DataBits:              8,
-		ParityMode:            serial.PARITY_NONE,
-		StopBits:              1,
-		RTSCTSFlowControl:     true,
-		MinimumReadSize:       0,
-		InterCharacterTimeout: 100,
-	}
-}
-
-func NewSerial(opts serial.OpenOptions) (io.ReadWriteCloser, error) {
-	// force these
-	opts.MinimumReadSize = 0
-	opts.InterCharacterTimeout = 100
-
-	println("opening h4 uart ", opts.PortName)
-	rwc, err := serial.Open(opts)
-	if err != nil {
-		return nil, err
-	}
-
-	// eof is ok (read timeout)
-	eofAsError := false
-	if err := resetAndWaitIdle(rwc, time.Second*2, eofAsError); err != nil {
-		_ = rwc.Close()
-		return nil, err
-	}
-
-	h := &h4{
-		rwc:     rwc,
-		done:    make(chan int),
-		rxQueue: make(chan []byte, rxQueueSize),
-		txQueue: make(chan []byte, txQueueSize),
-	}
-	h.frame = newFrame(h.rxQueue)
-
-	go h.rxLoop(eofAsError)
-
-	return h, nil
 }
 
 func NewSocket(addr string, connTimeout time.Duration) (io.ReadWriteCloser, error) {
@@ -121,6 +76,7 @@ func (h *h4) Read(p []byte) (int, error) {
 
 	var n int
 	var err error
+
 	select {
 	case t := <-h.rxQueue:
 		//ok
@@ -137,6 +93,7 @@ func (h *h4) Read(p []byte) (int, error) {
 	if !h.isOpen() {
 		return 0, io.EOF
 	}
+
 	return n, errors.Wrap(err, "can't read h4")
 }
 

@@ -1,9 +1,8 @@
 package hci
 
 import (
+	"errors"
 	"net"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 )

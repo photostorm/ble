@@ -12,13 +12,13 @@ type connWithTimeout struct {
 
 func (cwt *connWithTimeout) Read(b []byte) (int, error) {
 	// with deadline
-	cwt.c.SetReadDeadline(time.Now().Add(cwt.timeout))
+	_ = cwt.c.SetReadDeadline(time.Now().Add(cwt.timeout))
 	return cwt.c.Read(b)
 }
 
 func (cwt *connWithTimeout) Write(b []byte) (int, error) {
 	// with deadline
-	cwt.c.SetWriteDeadline(time.Now().Add(cwt.timeout))
+	_ = cwt.c.SetWriteDeadline(time.Now().Add(cwt.timeout))
 	return cwt.c.Write(b)
 }
 

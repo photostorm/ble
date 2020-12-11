@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux"
 	bonds "github.com/photostorm/ble/linux/hci/bond"
@@ -226,13 +227,11 @@ func propString(p ble.Property) string {
 }
 
 func chkErr(err error) {
-	switch errors.Cause(err) {
-	case nil:
-	case context.DeadlineExceeded:
+	if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Printf("done\n")
-	case context.Canceled:
+	} else if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Printf("canceled\n")
-	default:
+	} else if err != nil {
 		log.Fatalf(err.Error())
 	}
 }

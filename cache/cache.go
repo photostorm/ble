@@ -1,12 +1,12 @@
 package cache
 
 import (
+	"errors"
 	"fmt"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/photostorm/ble"
-	"io/ioutil"
 	"os"
 	"sync"
+
+	"github.com/photostorm/ble"
 )
 
 type gattCache struct {
@@ -76,30 +76,9 @@ func (gc *gattCache) Clear() error {
 }
 
 func (gc *gattCache) loadExisting() (map[string]ble.Profile, error) {
-	_, err := os.Stat(gc.filename)
-	if os.IsNotExist(err) {
-		return map[string]ble.Profile{}, nil
-	}
-
-	in, err := ioutil.ReadFile(gc.filename)
-	if err != nil {
-		return nil, err
-	}
-
-	var cache map[string]ble.Profile
-	err = jsoniter.Unmarshal(in, &cache)
-	if err != nil {
-		return nil, err
-	}
-
-	return cache, nil
+	return nil, errors.New("disabled")
 }
 
 func (gc *gattCache) storeCache(cache map[string]ble.Profile) error {
-	out, err := jsoniter.Marshal(cache)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(gc.filename, out, 0644)
+	return errors.New("disabled")
 }

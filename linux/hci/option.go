@@ -1,10 +1,9 @@
 package hci
 
 import (
+	"errors"
 	"fmt"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble/cache"
 
@@ -55,12 +54,12 @@ func (h *HCI) SetAdvParams(param cmd.LESetAdvertisingParameters) error {
 
 // SetPeripheralRole is not supported
 func (h *HCI) SetPeripheralRole() error {
-	return errors.New("Not supported")
+	return errors.New("not supported")
 }
 
 // SetCentralRole is not supported
 func (h *HCI) SetCentralRole() error {
-	return errors.New("Not supported")
+	return errors.New("not supported")
 }
 
 // SetAdvHandlerSync overrides default advertising handler behavior (async)

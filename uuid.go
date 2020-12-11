@@ -15,7 +15,7 @@ type UUID []byte
 func UUID16(i uint16) UUID {
 	b := make([]byte, 2)
 	binary.LittleEndian.PutUint16(b, i)
-	return UUID(b)
+	return b
 }
 
 // Parse parses a standard-format UUID string, such
@@ -29,7 +29,7 @@ func Parse(s string) (UUID, error) {
 	if err := lenErr(len(b)); err != nil {
 		return nil, err
 	}
-	return UUID(Reverse(b)), nil
+	return Reverse(b), nil
 }
 
 // MustParse parses a standard-format UUID string,
@@ -59,7 +59,7 @@ func (u UUID) Len() int {
 
 // String hex-encodes a UUID.
 func (u UUID) String() string {
-	return fmt.Sprintf("%x", Reverse(u))
+	return hex.EncodeToString(Reverse(u))
 }
 
 // Equal returns a boolean reporting whether v represent the same UUID as u.

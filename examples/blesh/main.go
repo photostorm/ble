@@ -10,11 +10,12 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
+	"github.com/urfave/cli"
+
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/examples/lib"
 	"github.com/photostorm/ble/examples/lib/dev"
 	"github.com/photostorm/ble/linux"
-	"github.com/urfave/cli"
 )
 
 var curr struct {
@@ -157,7 +158,7 @@ func setup(c *cli.Context) error {
 	fmt.Printf("Initializing device ...\n")
 	d, err := dev.NewDevice("default")
 	if err != nil {
-		return errors.Wrap(err, "can't new device")
+		return err
 	}
 	ble.SetDefaultDevice(d)
 	curr.device = d

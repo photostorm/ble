@@ -1,11 +1,8 @@
 package hci
 
 import (
-	"encoding/hex"
 	"strings"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux/adv"
@@ -39,7 +36,7 @@ func newAdvertisement(e evt.LEAdvertisingReport, i int) (*Advertisement, error) 
 			opp := len(a) - 1 - i
 			a[i], a[opp] = a[opp], a[i]
 		}
-		return nil, errors.Wrap(err, hex.EncodeToString(a[:]))
+		return nil, err
 	}
 
 	ts := int64(time.Now().UnixNano() / 1000)
@@ -75,7 +72,7 @@ func (a *Advertisement) setScanResponse(sr *Advertisement) error {
 	//does this parse ok?
 	p, err := adv.NewRawPacket(ad, srd)
 	if err != nil {
-		return errors.Wrap(err, "setScanResp")
+		return err
 	}
 
 	a.sr = sr
@@ -182,31 +179,31 @@ func (a *Advertisement) ToMap() (map[string]interface{}, error) {
 
 	addr, err := a.addrWErr()
 	if err != nil {
-		return nil, errors.Wrap(err, keys.MAC)
+		return nil, err
 	}
 	m[keys.MAC] = strings.Replace(addr.String(), ":", "", -1)
 
 	at, err := a.addressTypeWErr()
 	if err != nil {
-		return nil, errors.Wrap(err, keys.AddressType)
+		return nil, err
 	}
 	m[keys.AddressType] = at
 
 	et, err := a.eventTypeWErr()
 	if err != nil {
-		return nil, errors.Wrap(err, keys.EventType)
+		return nil, err
 	}
 	m[keys.EventType] = et
 
 	c, err := a.connectableWErr()
 	if err != nil {
-		return nil, errors.Wrap(err, keys.Connectable)
+		return nil, err
 	}
 	m[keys.Connectable] = c
 
 	r, err := a.rssiWErr()
 	if err != nil {
-		return nil, errors.Wrap(err, keys.RSSI)
+		return nil, err
 	}
 	if r != 0 {
 		m[keys.RSSI] = r

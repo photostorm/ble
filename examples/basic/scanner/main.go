@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/examples/lib/dev"
@@ -26,6 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("can't new device : %s", err)
 	}
+
 	ble.SetDefaultDevice(d)
 
 	// Scan for specified durantion, or until interrupted by user.
@@ -56,13 +56,11 @@ func advHandler(a ble.Advertisement) {
 }
 
 func chkErr(err error) {
-	switch errors.Cause(err) {
-	case nil:
-	case context.DeadlineExceeded:
+	if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Printf("done\n")
-	case context.Canceled:
+	} else if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Printf("canceled\n")
-	default:
+	} else if err != nil {
 		log.Fatalf(err.Error())
 	}
 }

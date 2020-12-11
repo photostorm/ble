@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"io"
 
-	smp2 "github.com/photostorm/ble/linux/hci/smp"
-
 	"github.com/pkg/errors"
+
+	smp2 "github.com/photostorm/ble/linux/hci/smp"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux/att"
@@ -31,19 +31,19 @@ func NewDeviceWithNameAndHandler(name string, handler ble.NotifyHandler, opts ..
 		return nil, errors.Wrap(err, "can't create hci")
 	}
 	if err = dev.Init(); err != nil {
-		dev.Close()
+		_ = dev.Close()
 		return nil, errors.Wrap(err, "can't init hci")
 	}
 
 	srv, err := gatt.NewServerWithNameAndHandler(name, handler)
 	if err != nil {
-		dev.Close()
+		_ = dev.Close()
 		return nil, errors.Wrap(err, "can't create server")
 	}
 
 	mtu := ble.MaxMTU // TODO: get this from user using Option.
 	if mtu > ble.MaxMTU {
-		dev.Close()
+		_ = dev.Close()
 		return nil, errors.Wrapf(err, "maximum ATT_MTU is %d", ble.MaxMTU)
 	}
 

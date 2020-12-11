@@ -1,7 +1,7 @@
 package hci
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"time"
 
@@ -32,16 +32,11 @@ func getTransport(t transport) (io.ReadWriteCloser, error) {
 	switch {
 	case t.hci != nil:
 		return socket.NewSocket(t.hci.id)
-
 	case t.h4socket != nil:
 		return h4.NewSocket(t.h4socket.addr, t.h4socket.timeout)
-
 	case t.h4uart != nil:
-		so := h4.DefaultSerialOptions()
-		so.PortName = t.h4uart.path
-		return h4.NewSerial(so)
-
+		return h4.NewSerial(t.h4uart.path)
 	default:
-		return nil, fmt.Errorf("no valid transport found")
+		return nil, errors.New("no valid transport found")
 	}
 }

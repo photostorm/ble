@@ -333,8 +333,6 @@ func determinePairingType(t *transport) int {
 
 	if rsp.IoCap >= hci.IoCapsReservedStart ||
 		req.IoCap >= hci.IoCapsReservedStart {
-		fmt.Printf("invalid io capabilities specified: req: %x rsp: %x\n",
-			req.IoCap, rsp.IoCap)
 		//todo: is this a valid assumption or should this return an error instead?
 		return JustWorks
 	}

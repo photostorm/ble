@@ -36,7 +36,7 @@ func OptDeviceID(id int) Option {
 // OptDialerTimeout sets dialing timeout for Dialer.
 func OptDialerTimeout(d time.Duration) Option {
 	return func(opt DeviceOption) error {
-		opt.SetDialerTimeout(d)
+		_ = opt.SetDialerTimeout(d)
 		return nil
 	}
 }
@@ -44,7 +44,7 @@ func OptDialerTimeout(d time.Duration) Option {
 // OptListenerTimeout sets dialing timeout for Listener.
 func OptListenerTimeout(d time.Duration) Option {
 	return func(opt DeviceOption) error {
-		opt.SetListenerTimeout(d)
+		_ = opt.SetListenerTimeout(d)
 		return nil
 	}
 }
@@ -52,7 +52,7 @@ func OptListenerTimeout(d time.Duration) Option {
 // OptConnParams overrides default connection parameters.
 func OptConnParams(param cmd.LECreateConnection) Option {
 	return func(opt DeviceOption) error {
-		opt.SetConnParams(param)
+		_ = opt.SetConnParams(param)
 		return nil
 	}
 }
@@ -60,7 +60,7 @@ func OptConnParams(param cmd.LECreateConnection) Option {
 // OptScanParams overrides default scanning parameters.
 func OptScanParams(param cmd.LESetScanParameters) Option {
 	return func(opt DeviceOption) error {
-		opt.SetScanParams(param)
+		_ = opt.SetScanParams(param)
 		return nil
 	}
 }
@@ -68,7 +68,7 @@ func OptScanParams(param cmd.LESetScanParameters) Option {
 // OptAdvParams overrides default advertising parameters.
 func OptAdvParams(param cmd.LESetAdvertisingParameters) Option {
 	return func(opt DeviceOption) error {
-		opt.SetAdvParams(param)
+		_ = opt.SetAdvParams(param)
 		return nil
 	}
 }
@@ -76,7 +76,7 @@ func OptAdvParams(param cmd.LESetAdvertisingParameters) Option {
 // OptPeripheralRole configures the device to perform Peripheral tasks.
 func OptPeripheralRole() Option {
 	return func(opt DeviceOption) error {
-		opt.SetPeripheralRole()
+		_ = opt.SetPeripheralRole()
 		return nil
 	}
 }
@@ -84,7 +84,7 @@ func OptPeripheralRole() Option {
 // OptCentralRole configures the device to perform Central tasks.
 func OptCentralRole() Option {
 	return func(opt DeviceOption) error {
-		opt.SetCentralRole()
+		_ = opt.SetCentralRole()
 		return nil
 	}
 }
@@ -92,7 +92,7 @@ func OptCentralRole() Option {
 // OptAdvHandlerSync sets sync adv handling
 func OptAdvHandlerSync(sync bool) Option {
 	return func(opt DeviceOption) error {
-		opt.SetAdvHandlerSync(sync)
+		_ = opt.SetAdvHandlerSync(sync)
 		return nil
 	}
 }
@@ -100,7 +100,7 @@ func OptAdvHandlerSync(sync bool) Option {
 // OptErrorHandler sets error handler
 func OptErrorHandler(handler func(error)) Option {
 	return func(opt DeviceOption) error {
-		opt.SetErrorHandler(handler)
+		_ = opt.SetErrorHandler(handler)
 		return nil
 	}
 }
@@ -108,7 +108,7 @@ func OptErrorHandler(handler func(error)) Option {
 // OptEnableSecurity enables bonding with devices
 func OptEnableSecurity(bondManager interface{}) Option {
 	return func(opt DeviceOption) error {
-		opt.EnableSecurity(bondManager)
+		_ = opt.EnableSecurity(bondManager)
 		return nil
 	}
 }
@@ -116,7 +116,7 @@ func OptEnableSecurity(bondManager interface{}) Option {
 // OptTransportHCISocket set hci socket transport
 func OptTransportHCISocket(id int) Option {
 	return func(opt DeviceOption) error {
-		opt.SetTransportHCISocket(id)
+		_ = opt.SetTransportHCISocket(id)
 		return nil
 	}
 }
@@ -124,7 +124,7 @@ func OptTransportHCISocket(id int) Option {
 // OptTransportH4Socket set h4 socket transport
 func OptTransportH4Socket(addr string, timeout time.Duration) Option {
 	return func(opt DeviceOption) error {
-		opt.SetTransportH4Socket(addr, timeout)
+		_ = opt.SetTransportH4Socket(addr, timeout)
 		return nil
 	}
 }
@@ -132,7 +132,7 @@ func OptTransportH4Socket(addr string, timeout time.Duration) Option {
 // OptTransportH4Uart set h4 uart transport
 func OptTransportH4Uart(path string) Option {
 	return func(opt DeviceOption) error {
-		opt.SetTransportH4Uart(path)
+		_ = opt.SetTransportH4Uart(path)
 		return nil
 	}
 }
