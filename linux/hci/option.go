@@ -1,13 +1,14 @@
 package hci
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
-	"github.com/rigado/ble/cache"
+	"github.com/pkg/errors"
 
-	"github.com/rigado/ble/linux/hci/cmd"
+	"github.com/photostorm/ble/cache"
+
+	"github.com/photostorm/ble/linux/hci/cmd"
 )
 
 // SetDialerTimeout sets dialing timeout for Dialer.

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/rigado/ble/linux/hci/cmd"
+	"github.com/photostorm/ble/linux/hci/cmd"
 )
 
 const (

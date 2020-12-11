@@ -2,9 +2,8 @@ package att
 
 import (
 	"encoding/binary"
-	"fmt"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 )
 
 // A DB is a contiguous range of attributes.
@@ -73,7 +72,7 @@ func NewDB(ss []*ble.Service, base uint16) *DB {
 		}
 		attrs = append(attrs, aa...)
 	}
-	DumpAttributes(attrs)
+
 	return &DB{attrs: attrs, base: base}
 }
 
@@ -139,19 +138,6 @@ func genDescAttr(d *ble.Descriptor, h uint16) *attr {
 		v:   d.Value,
 		rh:  d.ReadHandler,
 		wh:  d.WriteHandler,
-	}
-}
-
-// DumpAttributes ...
-func DumpAttributes(aa []*attr) {
-	logger.Debug("server", "db", "Generating attribute table:")
-	logger.Debug("server", "db", "handle   endh   type")
-	for _, a := range aa {
-		if a.v != nil {
-			logger.Debug("server", "db", fmt.Sprintf("0x%04X 0x%04X 0x%s [% X]", a.h, a.endh, a.typ, a.v))
-			continue
-		}
-		logger.Debug("server", "db", fmt.Sprintf("0x%04X 0x%04X 0x%s", a.h, a.endh, a.typ))
 	}
 }
 

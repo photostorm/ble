@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 )
 
 // NewCountChar ...

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
 )

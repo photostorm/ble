@@ -1,50 +1,51 @@
 package hci
 
 import (
-	"fmt"
 	"net"
 
-	"github.com/rigado/ble"
+	"github.com/pkg/errors"
+
+	"github.com/photostorm/ble"
 )
 
 func (a *Advertisement) localNameWErr() (string, error) {
 	if a.p == nil {
-		return "", fmt.Errorf("nil packet")
+		return "", errors.New("nil packet")
 	}
 	return a.p.LocalName(), nil
 }
 
 func (a *Advertisement) manufacturerDataWErr() ([]byte, error) {
 	if a.p == nil {
-		return nil, fmt.Errorf("nil packet")
+		return nil, errors.New("nil packet")
 	}
 	return a.p.ManufacturerData(), nil
 }
 
 func (a *Advertisement) serviceDataWErr() ([]ble.ServiceData, error) {
 	if a.p == nil {
-		return nil, fmt.Errorf("nil packet")
+		return nil, errors.New("nil packet")
 	}
 	return a.p.ServiceData(), nil
 }
 
 func (a *Advertisement) servicesWErr() ([]ble.UUID, error) {
 	if a.p == nil {
-		return nil, fmt.Errorf("nil packet")
+		return nil, errors.New("nil packet")
 	}
 	return a.p.UUIDs(), nil
 }
 
 func (a *Advertisement) overflowServiceWErr() ([]ble.UUID, error) {
 	if a.p == nil {
-		return nil, fmt.Errorf("nil packet")
+		return nil, errors.New("nil packet")
 	}
 	return a.p.UUIDs(), nil
 }
 
 func (a *Advertisement) txPowerLevelWErr() (int, error) {
 	if a.p == nil {
-		return 0, fmt.Errorf("nil packet")
+		return 0, errors.New("nil packet")
 	}
 
 	pwr, _ := a.p.TxPower()
@@ -53,7 +54,7 @@ func (a *Advertisement) txPowerLevelWErr() (int, error) {
 
 func (a *Advertisement) solicitedServiceWErr() ([]ble.UUID, error) {
 	if a.p == nil {
-		return nil, fmt.Errorf("nil packet")
+		return nil, errors.New("nil packet")
 	}
 	return a.p.ServiceSol(), nil
 }

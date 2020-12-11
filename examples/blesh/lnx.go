@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux"
-	"github.com/rigado/ble/linux/hci/cmd"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux"
+	"github.com/photostorm/ble/linux/hci/cmd"
 	"github.com/pkg/errors"
 )
 

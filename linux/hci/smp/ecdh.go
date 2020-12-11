@@ -5,8 +5,9 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 
-	"github.com/rigado/ble/sliceops"
 	"github.com/wsddn/go-ecdh"
+
+	"github.com/photostorm/ble/sliceops"
 )
 
 type ECDHKeys struct {

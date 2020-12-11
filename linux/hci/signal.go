@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"time"
 
-	"github.com/rigado/ble/linux/hci/cmd"
+	"github.com/photostorm/ble/linux/hci/cmd"
 )
 
 // Signal ...
@@ -101,28 +100,25 @@ func (c *Conn) sendResponse(code uint8, id uint8, r Signal) (int, error) {
 	if err := binary.Write(buf, binary.LittleEndian, data); err != nil {
 		return 0, err
 	}
-	logger.Debug("sig", "send", fmt.Sprintf("[%X]", buf.Bytes()))
+
 	return c.writePDU(buf.Bytes())
 }
 
 func (c *Conn) handleSignal(p pdu) error {
-	logger.Debug("sig", "recv", fmt.Sprintf("[%X]", p))
 	// When multiple commands are included in an L2CAP packet and the packet
 	// exceeds the signaling MTU (MTUsig) of the receiver, a single Command Reject
 	// packet shall be sent in response. The identifier shall match the first Request
 	// command in the L2CAP packet. If only Responses are recognized, the packet
 	// shall be silently discarded. [Vol3, Part A, 4.1]
 	if p.dlen() > c.sigRxMTU {
-		_, err := c.sendResponse(
+		_, _ = c.sendResponse(
 			SignalCommandReject,
 			sigCmd(p.payload()).id(),
 			&CommandReject{
 				Reason: 0x0001,                                            // Signaling MTU exceeded.
 				Data:   []byte{uint8(c.sigRxMTU), uint8(c.sigRxMTU >> 8)}, // Actual MTUsig.
 			})
-		if err != nil {
-			_ = logger.Error("send repsonse", fmt.Sprintf("%v", err))
-		}
+
 		return nil
 	}
 

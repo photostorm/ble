@@ -2,15 +2,15 @@ package hci
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/adv"
-	"github.com/rigado/ble/linux/gatt"
-	"github.com/rigado/ble/sliceops"
+
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/adv"
+	"github.com/photostorm/ble/linux/gatt"
+	"github.com/photostorm/ble/sliceops"
 )
 
 // Addr ...
@@ -192,7 +192,7 @@ func (h *HCI) Accept() (ble.Conn, error) {
 	case c := <-h.chSlaveConn:
 		return c, nil
 	case <-tmo:
-		return nil, fmt.Errorf("listener timed out")
+		return nil, errors.New("listener timed out")
 	}
 }
 
@@ -217,8 +217,6 @@ func (h *HCI) Dial(ctx context.Context, a ble.Addr) (ble.Client, error) {
 	ab = sliceops.SwapBuf(ab)
 	copy(h.params.connParams.PeerAddress[:], ab)
 
-	logger.Info("dialing addr %v, type %v", a.String(), h.params.connParams.PeerAddressType)
-
 	if err = h.Send(&h.params.connParams, nil); err != nil {
 		return nil, err
 	}
@@ -236,7 +234,7 @@ func (h *HCI) Dial(ctx context.Context, a ble.Addr) (ble.Client, error) {
 		return nil, h.err
 	case c, ok := <-h.chMasterConn:
 		if !ok {
-			return nil, fmt.Errorf("chMasterConn closed")
+			return nil, errors.New("chMasterConn closed")
 		}
 		return gatt.NewClient(c, h.cache, h.done)
 	}
@@ -247,17 +245,15 @@ func (h *HCI) cancelDial() (ble.Client, error) {
 	err := h.Send(&h.params.connCancel, nil)
 	if err == nil {
 		// The pending connection was canceled successfully.
-		return nil, fmt.Errorf("connection canceled")
+		return nil, errors.New("connection canceled")
 	}
 	// The connection has been established, the cancel command
 	// failed with ErrDisallowed.
 	if err == ErrDisallowed {
 		select {
 		case c := <-h.chMasterConn:
-			logger.Debug("hci", "got connection complete obj after disallowed")
 			return gatt.NewClient(c, h.cache, h.done)
 		case <-time.After(50 * time.Millisecond):
-			logger.Debug("hci", "connection req timed out even though a connection was made...")
 			return nil, errors.Wrap(err, "cancel connection failed")
 		}
 	}

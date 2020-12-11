@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 	"os"
 	"reflect"
 	"testing"

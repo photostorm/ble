@@ -1,9 +1,6 @@
 package att
 
-import (
-	"errors"
-)
-
+import "github.com/pkg/errors"
 
 var (
 	// ErrInvalidArgument means one or more of the arguments are invalid.

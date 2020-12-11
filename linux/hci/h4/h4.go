@@ -10,7 +10,6 @@ import (
 
 	"github.com/jacobsa/go-serial/serial"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -51,7 +50,7 @@ func NewSerial(opts serial.OpenOptions) (io.ReadWriteCloser, error) {
 	opts.MinimumReadSize = 0
 	opts.InterCharacterTimeout = 100
 
-	logrus.Debugf("opening h4 uart %v...", opts.PortName)
+	println("opening h4 uart ", opts.PortName)
 	rwc, err := serial.Open(opts)
 	if err != nil {
 		return nil, err
@@ -60,10 +59,9 @@ func NewSerial(opts serial.OpenOptions) (io.ReadWriteCloser, error) {
 	// eof is ok (read timeout)
 	eofAsError := false
 	if err := resetAndWaitIdle(rwc, time.Second*2, eofAsError); err != nil {
-		rwc.Close()
+		_ = rwc.Close()
 		return nil, err
 	}
-	logrus.Debugf("opened %v", opts)
 
 	h := &h4{
 		rwc:     rwc,
@@ -79,7 +77,7 @@ func NewSerial(opts serial.OpenOptions) (io.ReadWriteCloser, error) {
 }
 
 func NewSocket(addr string, connTimeout time.Duration) (io.ReadWriteCloser, error) {
-	logrus.Debugf("opening h4 socket %v ...", addr)
+	println("opening h4 socket", addr)
 	c, err := net.DialTimeout("tcp", addr, 10*time.Second)
 	if err != nil {
 		return nil, err
@@ -95,7 +93,7 @@ func NewSocket(addr string, connTimeout time.Duration) (io.ReadWriteCloser, erro
 		rwc.Close()
 		return nil, err
 	}
-	logrus.Debugf("opened %v", c.RemoteAddr().String())
+	println("opened", c.RemoteAddr().String())
 
 	// set the real timeout
 	rwc.timeout = connTimeout
@@ -160,12 +158,12 @@ func (h *h4) Close() error {
 
 	select {
 	case <-h.done:
-		logrus.Infoln("h4 already closed!")
+		println("h4 already closed!")
 		return nil
 
 	default:
 		close(h.done)
-		logrus.Infoln("closing h4")
+		println("closing h4")
 		h.rmu.Lock()
 		err := h.rwc.Close()
 		h.rmu.Unlock()
@@ -177,7 +175,7 @@ func (h *h4) Close() error {
 func (h *h4) isOpen() bool {
 	select {
 	case <-h.done:
-		logrus.Infoln("isOpen: <-h.done, false")
+		println("isOpen: <-h.done, false")
 		return false
 	default:
 		return h.rwc != nil
@@ -191,11 +189,11 @@ func (h *h4) rxLoop(eofAsError bool) {
 	for {
 		select {
 		case <-h.done:
-			logrus.Infoln("rxLoop killed")
+			println("rxLoop killed")
 			return
 		default:
 			if h.rwc == nil {
-				logrus.Infoln("rxLoop nil rwc")
+				println("rxLoop nil rwc")
 				return
 			}
 		}
@@ -213,7 +211,7 @@ func (h *h4) rxLoop(eofAsError bool) {
 			continue
 		default:
 			// uhoh!
-			logrus.Error(err)
+			println(err.Error())
 			return
 		}
 	}

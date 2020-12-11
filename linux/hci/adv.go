@@ -7,9 +7,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/adv"
-	"github.com/rigado/ble/linux/hci/evt"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/adv"
+	"github.com/photostorm/ble/linux/hci/evt"
 )
 
 // RandomAddress is a Random Device Address.

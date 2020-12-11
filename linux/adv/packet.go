@@ -4,8 +4,9 @@ import (
 	"encoding/binary"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/parser"
+
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/parser"
 )
 
 var keys = struct {

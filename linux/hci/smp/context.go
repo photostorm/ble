@@ -8,9 +8,9 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/hci"
-	"github.com/rigado/ble/sliceops"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/hci"
+	"github.com/photostorm/ble/sliceops"
 )
 
 const (
@@ -127,7 +127,7 @@ func (p *pairingContext) generatePassKeyConfirm() ([]byte, []byte) {
 
 	calcConf, err := smpF4(kax, kbx, nai, z)
 	if err != nil {
-		fmt.Println(err)
+		println(err.Error())
 	}
 
 	//fmt.Printf("passkey confirm %d: z: %x, conf: %v\n", iteration, z, hex.EncodeToString(calcConf))

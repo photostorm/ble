@@ -3,8 +3,9 @@ package parser
 import (
 	"fmt"
 
-	"github.com/rigado/ble"
 	"github.com/pkg/errors"
+
+	"github.com/photostorm/ble"
 )
 
 // https://www.bluetooth.org/en-us/specification/assigned-numbers/generic-access-profile

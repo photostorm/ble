@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"io"
 
-	smp2 "github.com/rigado/ble/linux/hci/smp"
+	smp2 "github.com/photostorm/ble/linux/hci/smp"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/att"
-	"github.com/rigado/ble/linux/gatt"
-	"github.com/rigado/ble/linux/hci"
+
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/att"
+	"github.com/photostorm/ble/linux/gatt"
+	"github.com/photostorm/ble/linux/hci"
 )
 
 // NewDevice returns the default HCI device.
@@ -58,13 +59,12 @@ func loop(dev *hci.HCI, s *gatt.Server, mtu int) {
 			// An EOF error indicates that the HCI socket was closed during
 			// the read.  Don't report this as an error.
 			if err != io.EOF {
-				fmt.Printf("can't accept: %s\n", err)
+				println("can't accept: ", err.Error())
 			}
 			return
 		}
 
 		if l2c == nil {
-			fmt.Printf("l2c nil\n")
 			return
 		}
 
@@ -76,10 +76,10 @@ func loop(dev *hci.HCI, s *gatt.Server, mtu int) {
 		as, err := att.NewServer(s.DB(), l2c)
 		s.Unlock()
 		if err != nil {
-			fmt.Printf("can't create ATT server: %s\n", err)
+			println("can't create ATT server: ", err.Error())
 			continue
 		}
-		fmt.Println("starting server loop")
+		println("starting server loop")
 		go as.Loop()
 	}
 }

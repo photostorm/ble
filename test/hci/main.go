@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux"
 	"github.com/pkg/errors"
 )
 

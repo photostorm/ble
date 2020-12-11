@@ -5,10 +5,11 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/rigado/ble/linux/hci"
 	"io/ioutil"
 	"os"
 	"sync"
+
+	"github.com/photostorm/ble/linux/hci"
 )
 
 type manager struct {
@@ -48,7 +49,6 @@ func (m *manager) Exists(addr string) bool {
 
 	bonds, err := m.loadBonds()
 	if err != nil {
-		fmt.Print(err)
 		return false
 	}
 
@@ -85,7 +85,7 @@ func (m *manager) Find(addr string) (hci.BondInfo, error) {
 		delete(bonds, addr)
 		err := m.storeBonds(bonds)
 		if err != nil {
-			fmt.Printf("bondData manager err: %s\n", err)
+			println("bondData manager err: " + err.Error())
 		}
 		return nil, fmt.Errorf("found invalid bondData information: %s\n", bondErr)
 	}
@@ -112,9 +112,9 @@ func (m *manager) Save(addr string, bond hci.BondInfo) error {
 
 	bd := createBondData(bond)
 
-	//check to see if this address already exists
+	// check to see if this address already exists
 	if _, ok := bonds[addr]; ok {
-		fmt.Printf("replacing existing bondData for %s\n", addr)
+		println("replacing existing bondData for " + addr)
 	}
 
 	bonds[addr] = bd

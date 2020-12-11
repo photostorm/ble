@@ -6,11 +6,10 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"log"
 	"time"
 
-	"github.com/rigado/ble/linux/hci"
-	"github.com/rigado/ble/sliceops"
+	"github.com/photostorm/ble/linux/hci"
+	"github.com/photostorm/ble/sliceops"
 )
 
 func buildPairingReq(p hci.SmpConfig) []byte {
@@ -93,7 +92,7 @@ func (t *transport) sendPublicKey() error {
 	if t.pairing.scECDHKeys == nil {
 		keys, err := GenerateKeys()
 		if err != nil {
-			fmt.Println("error generating secure keys:", err)
+			println("error generating secure keys:", err.Error())
 		}
 		t.pairing.scECDHKeys = keys
 	}
@@ -136,7 +135,6 @@ func (t *transport) sendDHKeyCheck() error {
 		return fmt.Errorf("no pairing context")
 	}
 
-	log.Printf("send dhkey check")
 	p := t.pairing
 
 	//Ea = f6 (MacKey, Na, Nb, rb, IOcapA, A, B)

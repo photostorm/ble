@@ -12,9 +12,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux"
-	bonds "github.com/rigado/ble/linux/hci/bond"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux"
+	bonds "github.com/photostorm/ble/linux/hci/bond"
 )
 
 var (

@@ -5,8 +5,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/rigado/ble/linux/hci/h4"
-	"github.com/rigado/ble/linux/hci/socket"
+	"github.com/photostorm/ble/linux/hci/h4"
+	"github.com/photostorm/ble/linux/hci/socket"
 )
 
 type transportHci struct {

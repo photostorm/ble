@@ -3,7 +3,7 @@ package main
 import (
 	"strings"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 	"github.com/urfave/cli"
 )
 

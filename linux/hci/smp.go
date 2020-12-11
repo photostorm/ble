@@ -1,8 +1,9 @@
 package hci
 
 import (
-	"github.com/rigado/ble"
 	"time"
+
+	"github.com/photostorm/ble"
 )
 
 type smpDispatcher struct {

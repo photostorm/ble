@@ -3,11 +3,12 @@ package att
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"io"
 	"time"
 
-	"github.com/rigado/ble"
+	"github.com/pkg/errors"
+
+	"github.com/photostorm/ble"
 )
 
 type conn struct {
@@ -42,7 +43,7 @@ type Server struct {
 func NewServer(db *DB, l2c ble.Conn) (*Server, error) {
 	mtu := l2c.RxMTU()
 	if mtu < ble.DefaultMTU || mtu > ble.MaxMTU {
-		return nil, fmt.Errorf("invalid MTU")
+		return nil, errors.New("invalid MTU")
 	}
 	// Although the rxBuf is initialized with the capacity of rxMTU, it is
 	// not discovered, and only the default ATT_MTU (23 bytes) of it shall
@@ -142,8 +143,9 @@ func (s *Server) Loop() {
 			if b.buf[0] == HandleValueConfirmationCode {
 				select {
 				case s.chConfirm <- true:
+					break
 				default:
-					logger.Error("server", "received a spurious confirmation", nil)
+					break
 				}
 				continue
 			}
@@ -155,15 +157,12 @@ func (s *Server) Loop() {
 	for req := range seq {
 		if rsp := s.handleRequest(req.buf[:req.len]); rsp != nil {
 			if len(rsp) != 0 {
-				s.conn.Write(rsp)
+				_, _ = s.conn.Write(rsp)
 			}
 		}
 		pool <- req
 	}
 	for h, ccc := range s.conn.cccs {
-		if ccc != 0 {
-			logger.Info("cleanup", ble.ContextKeyCCC, fmt.Sprintf("0x%02X", ccc))
-		}
 		if ccc&cccIndicate != 0 {
 			s.conn.in[h].Close()
 		}
@@ -182,7 +181,6 @@ func (s *Server) handleRequest(b []byte) []byte {
 	if len(b) == 0 {
 		return nil
 	}
-	logger.Debug("server", "req", fmt.Sprintf("% X", b))
 
 	switch reqType := b[0]; reqType {
 	case ExchangeMTURequestCode:
@@ -213,7 +211,7 @@ func (s *Server) handleRequest(b []byte) []byte {
 	default:
 		resp = newErrorResponse(reqType, 0x0000, ble.ErrReqNotSupp)
 	}
-	logger.Debug("server", "rsp", fmt.Sprintf("% X", resp))
+
 	return resp
 }
 
@@ -543,7 +541,6 @@ func (s *Server) handleWriteRequest(r WriteRequest) []byte {
 }
 
 func (s *Server) handlePrepareWriteRequest(r PrepareWriteRequest) []byte {
-	logger.Debug("handlePrepareWriteRequest ->", "r.AttributeHandle", r.AttributeHandle())
 	// Validate the request.
 	switch {
 	case len(r) < 3:
@@ -648,8 +645,6 @@ func handleATT(a *attr, s *Server, req []byte, rsp ble.ResponseWriter) ble.ATTEr
 			return ble.ErrWriteNotPerm
 		}
 		data = PrepareWriteRequest(req).PartAttributeValue()
-		logger.Debug("handleATT", "PartAttributeValue",
-			fmt.Sprintf("data: %x, offset: %d, %p\n", data, int(PrepareWriteRequest(req).ValueOffset()), s.prepareWriteRequestAttr))
 
 		if s.prepareWriteRequestAttr == nil {
 			s.prepareWriteRequestAttr = a

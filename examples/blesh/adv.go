@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 )
 
 func advHandler(a ble.Advertisement) {

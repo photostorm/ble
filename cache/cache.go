@@ -3,7 +3,7 @@ package cache
 import (
 	"fmt"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 	"io/ioutil"
 	"os"
 	"sync"

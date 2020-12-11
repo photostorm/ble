@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/hci"
-	"github.com/rigado/ble/sliceops"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/hci"
+	"github.com/photostorm/ble/sliceops"
 )
 
 type PairingState int
@@ -79,7 +79,7 @@ func (m *manager) Handle(in []byte) error {
 	data := payload[1:]
 	v, ok := dispatcher[code]
 	if !ok || v.handler == nil {
-		fmt.Println("smp:", "unhandled smp code %v", code)
+		println("smp:", "unhandled smp code", code)
 
 		// C.5.1 Pairing Not Supported
 		return m.t.send([]byte{pairingFailed, 0x05})
@@ -146,7 +146,6 @@ func (m *manager) StartEncryption() error {
 func (m *manager) BondInfoFor(addr string) hci.BondInfo {
 	bi, err := m.bondManager.Find(addr)
 	if err != nil {
-		fmt.Print(err)
 		return nil
 	}
 

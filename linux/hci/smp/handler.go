@@ -4,7 +4,8 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"github.com/rigado/ble/linux/hci"
+
+	"github.com/photostorm/ble/linux/hci"
 )
 
 //func smpOnPairingRequest(c *Conn, in pdu) ([]byte, error) {
@@ -43,7 +44,7 @@ func smpOnPairingResponse(t *transport, in pdu) ([]byte, error) {
 	t.pairing.legacy = isLegacy(rx.AuthReq)
 	t.pairing.pairingType = determinePairingType(t)
 
-	fmt.Println("detected pairing type: ", pairingTypeStrings[t.pairing.pairingType])
+	println("detected pairing type: ", pairingTypeStrings[t.pairing.pairingType])
 
 	if t.pairing.pairingType == Oob &&
 		len(t.pairing.authData.OOBData) == 0 {
@@ -109,7 +110,6 @@ func onSecureRandom(t *transport) ([]byte, error) {
 	} else {
 		err := t.pairing.checkConfirm()
 		if err != nil {
-			fmt.Println(err)
 			return nil, err
 		}
 	}
@@ -119,14 +119,12 @@ func onSecureRandom(t *transport) ([]byte, error) {
 	// move on to auth stage 2 (2.3.5.6.5) calc mackey, ltk
 	err := t.pairing.calcMacLtk()
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
 	//send dhkey check
 	err = t.sendDHKeyCheck()
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
@@ -190,7 +188,7 @@ func smpOnDHKeyCheck(t *transport, in pdu) ([]byte, error) {
 		return nil, err
 	}
 
-	fmt.Println("dhkey check pass!")
+	println("dhkey check pass!")
 	err = t.saveBondInfo()
 	if err != nil {
 		return nil, err
@@ -219,7 +217,7 @@ func smpOnSecurityRequest(t *transport, in pdu) ([]byte, error) {
 
 	ra := hex.EncodeToString(t.pairing.remoteAddr)
 	bi, err := t.bondManager.Find(ra)
-	fmt.Println(err)
+
 	if err == nil {
 		t.pairing.bond = bi
 		return nil, t.encrypter.Encrypt()
@@ -337,7 +335,6 @@ func determinePairingType(t *transport) int {
 		req.IoCap >= hci.IoCapsReservedStart {
 		fmt.Printf("invalid io capabilities specified: req: %x rsp: %x\n",
 			req.IoCap, rsp.IoCap)
-		fmt.Println("using just works")
 		//todo: is this a valid assumption or should this return an error instead?
 		return JustWorks
 	}

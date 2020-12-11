@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/hci/evt"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/hci/evt"
 )
 
 var r interface{}

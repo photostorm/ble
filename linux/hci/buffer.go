@@ -2,8 +2,9 @@ package hci
 
 import (
 	"bytes"
-	"fmt"
 	"sync"
+
+	"github.com/pkg/errors"
 )
 
 // Pool ...
@@ -18,7 +19,7 @@ type Pool struct {
 // NewPool ...
 func NewPool(sz int, cnt int) (*Pool, error) {
 	if cnt == 0 {
-		return nil, fmt.Errorf("invalid buffer size")
+		return nil, errors.New("invalid buffer size")
 	}
 	ch := make(chan *bytes.Buffer, cnt)
 	for len(ch) < cnt {

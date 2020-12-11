@@ -10,10 +10,10 @@ import (
 	"syscall"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/examples/lib"
-	"github.com/rigado/ble/examples/lib/dev"
-	"github.com/rigado/ble/linux"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/examples/lib"
+	"github.com/photostorm/ble/examples/lib/dev"
+	"github.com/photostorm/ble/linux"
 	"github.com/urfave/cli"
 )
 

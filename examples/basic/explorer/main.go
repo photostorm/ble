@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux"
 )
 
 var (

@@ -2,14 +2,13 @@ package gatt
 
 import (
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
-	"log"
 	"sync"
 	"time"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/att"
+	"github.com/pkg/errors"
+
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/att"
 )
 
 const (
@@ -84,22 +83,25 @@ func (p *Client) DiscoverProfile(force bool) (*ble.Profile, error) {
 	if p.profile != nil && !force {
 		return p.profile, nil
 	}
+
 	ss, err := p.DiscoverServices(nil)
 	if err != nil {
-		return nil, fmt.Errorf("can't discover services: %s", err)
+		return nil, errors.New("can't discover services: " + err.Error())
 	}
+
 	for _, s := range ss {
 		cs, err := p.DiscoverCharacteristics(nil, s)
 		if err != nil {
-			return nil, fmt.Errorf("can't discover characteristics: %s", err)
+			return nil, errors.New("can't discover characteristics: " + err.Error())
 		}
 		for _, c := range cs {
 			_, err := p.DiscoverDescriptors(nil, c)
 			if err != nil {
-				return nil, fmt.Errorf("can't discover descriptors: %s", err)
+				return nil, errors.New("can't discover descriptors: " + err.Error())
 			}
 		}
 	}
+
 	p.profile = &ble.Profile{Services: ss}
 	return p.profile, nil
 }
@@ -343,7 +345,7 @@ func (p *Client) Subscribe(c *ble.Characteristic, ind bool, h ble.NotificationHa
 	p.Lock()
 	defer p.Unlock()
 	if c.CCCD == nil {
-		return fmt.Errorf("CCCD not found")
+		return errors.New("CCCD not found")
 	}
 	flag := cccNotify
 	if ind {
@@ -359,7 +361,7 @@ func (p *Client) Unsubscribe(c *ble.Characteristic, ind bool) error {
 	p.Lock()
 	defer p.Unlock()
 	if c.CCCD == nil {
-		return fmt.Errorf("CCCD not found")
+		return errors.New("CCCD not found")
 	}
 	if ind {
 		return p.setHandlers(c.CCCD.Handle, c.ValueHandle, cccIndicate, nil)
@@ -440,7 +442,6 @@ func (p *Client) HandleNotification(req []byte) {
 	sub, ok := p.subs[vh]
 	if !ok {
 		// FIXME: disconnects and propagate an error to the user.
-		log.Printf("got an unregistered notification")
 		return
 	}
 
@@ -453,7 +454,7 @@ func (p *Client) HandleNotification(req []byte) {
 	case sub.nHandler != nil:
 		sub.nHandler(sub.id, nd)
 	default:
-		log.Printf("no handler, dropping data vh 0x%x, indication %v, id %v, %v", vh, indication, sub.id, hex.EncodeToString(nd))
+		break
 	}
 	sub.id++
 }

@@ -10,9 +10,10 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/hci/cmd"
-	"github.com/rigado/ble/linux/hci/evt"
+
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/hci/cmd"
+	"github.com/photostorm/ble/linux/hci/evt"
 )
 
 // Conn ...
@@ -111,10 +112,7 @@ func newConn(h *HCI, param evt.LEConnectionComplete) *Conn {
 					c.hci.dispatchError(err)
 
 					//attempt to cleanup
-					logger.Error("conn", "error in recombine, cleaning up connection handle")
-					if err := c.hci.cleanupConnectionHandle(c.param.ConnectionHandle()); err != nil {
-						fmt.Printf("recombine cleanup: %v\n", err)
-					}
+					_ = c.hci.cleanupConnectionHandle(c.param.ConnectionHandle())
 				}
 				close(c.chInPDU)
 				return
@@ -237,17 +235,16 @@ func (c *Conn) encrypt(bi BondInfo) error {
 	legacy, stk := c.smp.LegacyPairingInfo()
 	//if a short term key is present, use it as the long term key
 	if legacy && len(stk) > 0 {
-		fmt.Println("encrypting with short term key")
 		return c.stkEncrypt(stk)
 	}
 
 	if bi == nil {
-		return fmt.Errorf("no bond information")
+		return errors.New("no bond information")
 	}
 
 	ltk := bi.LongTermKey()
 	if ltk == nil {
-		return fmt.Errorf("no ltk present")
+		return errors.New("no ltk present")
 	}
 
 	m := cmd.LEStartEncryption{}
@@ -259,11 +256,11 @@ func (c *Conn) encrypt(bi BondInfo) error {
 	if bi.Legacy() {
 		//expect LTK, EDiv, and Rand to be present
 		if len(ltk) != 16 {
-			return fmt.Errorf("invalid length for ltk")
+			return errors.New("invalid length for ltk")
 		}
 
 		if eDiv == 0 || randVal == 0 {
-			return fmt.Errorf("ediv and random must not be 0 for legacy pairing")
+			return errors.New("ediv and random must not be 0 for legacy pairing")
 		}
 	}
 
@@ -369,7 +366,7 @@ func (c *Conn) recombine() error {
 	}
 
 	p := pdu(pkt.data())
-	logger.Debug("recombine", "pdu in:", fmt.Sprintf("% X", pkt.data()))
+
 	// Currently, check for LE-U only. For channels that we don't recognizes,
 	// re-combine them anyway, and discard them later when we dispatch the PDU
 	// according to CID.
@@ -405,7 +402,7 @@ func (c *Conn) recombine() error {
 	case CidSMP:
 		_ = c.smp.Handle(p)
 	default:
-		logger.Info("recombine()", "unrecognized CID", fmt.Sprintf("%04X, [%X]", p.cid(), p))
+		break
 	}
 	return nil
 }
@@ -414,11 +411,8 @@ func (c *Conn) handleEncryptionChanged(status uint8, enabled uint8) {
 	var err error
 	if status != 0x00 {
 		cmdErr := ErrCommand(status)
-		err = fmt.Errorf(errCmd[cmdErr])
-		e := c.smp.DeleteBondInfo()
-		if e != nil {
-			_ = logger.Error("failed to delete bond info", e)
-		}
+		err = errors.New(errCmd[cmdErr])
+		_ = c.smp.DeleteBondInfo()
 	}
 
 	info := ble.EncryptionChangedInfo{Status: int(status), Err: err, Enabled: enabled == 0x01}
@@ -427,10 +421,8 @@ func (c *Conn) handleEncryptionChanged(status uint8, enabled uint8) {
 		case c.encChanged <- info:
 			return
 		default:
-			_ = logger.Error("failed to send encryption changed status to channel:", info)
+			break
 		}
-	} else {
-		logger.Info("encryption changed result - status:", status, "; err:", err)
 	}
 }
 
@@ -451,7 +443,6 @@ func (c *Conn) Close() error {
 			Reason:           0x13,
 		}, nil)
 
-		logger.Debug("conn", "connection close called")
 		_ = c.hci.cleanupConnectionHandle(c.param.ConnectionHandle())
 		return err
 	}

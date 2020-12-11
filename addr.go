@@ -2,7 +2,6 @@ package ble
 
 import (
 	"encoding/hex"
-	"fmt"
 	"strings"
 )
 
@@ -27,10 +26,7 @@ func (a addr) String() string {
 func (a addr) Bytes() []byte {
 	hexStr := strings.Replace(a.String(), ":", "", -1)
 
-	out, err := hex.DecodeString(hexStr)
-	if err != nil {
-		fmt.Println("error decoding address:", err, a.String())
-	}
+	out, _ := hex.DecodeString(hexStr)
 
 	return out
 }

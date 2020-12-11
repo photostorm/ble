@@ -1,6 +1,6 @@
 package adv
 
-import "errors"
+import "github.com/pkg/errors"
 
 // MaxEIRPacketLength is the maximum allowed AdvertisingPacket
 // and ScanResponsePacket length.

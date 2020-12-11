@@ -4,7 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/rigado/ble/sliceops"
+	"github.com/photostorm/ble/sliceops"
 )
 
 func smpF4(u, v, x []byte, z uint8) ([]byte, error) {
@@ -47,7 +47,6 @@ func smpF5(w, n1, n2, a1, a2 []byte) ([]byte, []byte, error) {
 
 	t, err := aesCMAC(salt, w)
 	if err != nil {
-		fmt.Println("failed to generate f5 key:", err)
 		return nil, nil, err
 	}
 
@@ -61,7 +60,6 @@ func smpF5(w, n1, n2, a1, a2 []byte) ([]byte, []byte, error) {
 
 	macKey, err := aesCMAC(t, m)
 	if err != nil {
-		fmt.Println("failed to generate macKey:", err)
 		return nil, nil, err
 	}
 
@@ -70,7 +68,6 @@ func smpF5(w, n1, n2, a1, a2 []byte) ([]byte, []byte, error) {
 
 	ltk, err := aesCMAC(t, m)
 	if err != nil {
-		fmt.Print("failed to generate ltk:", err)
 		return nil, nil, err
 	}
 

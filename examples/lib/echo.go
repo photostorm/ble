@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/rigado/ble"
+	"github.com/photostorm/ble"
 )
 
 // NewEchoChar ...

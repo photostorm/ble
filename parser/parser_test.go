@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux/adv"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux/adv"
 )
 
 type testPdu struct {

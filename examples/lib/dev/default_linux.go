@@ -1,8 +1,8 @@
 package dev
 
 import (
-	"github.com/rigado/ble"
-	"github.com/rigado/ble/linux"
+	"github.com/photostorm/ble"
+	"github.com/photostorm/ble/linux"
 )
 
 // DefaultDevice ...
