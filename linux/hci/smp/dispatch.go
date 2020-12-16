@@ -1,3 +1,5 @@
+// +build blesmp
+
 package smp
 
 var dispatcher = map[byte]smpDispatcher{
