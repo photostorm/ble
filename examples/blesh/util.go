@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/photostorm/ble"
 	"github.com/pkg/errors"
 	"github.com/urfave/cli"
+
+	"github.com/photostorm/ble"
 )
 
 func doGetUUID(c *cli.Context) error {

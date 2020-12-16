@@ -2,10 +2,8 @@ package linux
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"io"
-
-	"github.com/pkg/errors"
 
 	smp2 "github.com/photostorm/ble/linux/hci/smp"
 
@@ -28,23 +26,23 @@ func NewDeviceWithName(name string, opts ...ble.Option) (*Device, error) {
 func NewDeviceWithNameAndHandler(name string, handler ble.NotifyHandler, opts ...ble.Option) (*Device, error) {
 	dev, err := hci.NewHCI(smp2.NewSmpFactory(nil), opts...)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't create hci")
+		return nil, err
 	}
 	if err = dev.Init(); err != nil {
 		_ = dev.Close()
-		return nil, errors.Wrap(err, "can't init hci")
+		return nil, err
 	}
 
 	srv, err := gatt.NewServerWithNameAndHandler(name, handler)
 	if err != nil {
 		_ = dev.Close()
-		return nil, errors.Wrap(err, "can't create server")
+		return nil, err
 	}
 
 	mtu := ble.MaxMTU // TODO: get this from user using Option.
 	if mtu > ble.MaxMTU {
 		_ = dev.Close()
-		return nil, errors.Wrapf(err, "maximum ATT_MTU is %d", ble.MaxMTU)
+		return nil, errors.New("maximum ATT_MTU")
 	}
 
 	go loop(dev, srv, mtu)
@@ -192,11 +190,11 @@ func (d *Device) Dial(ctx context.Context, a ble.Addr) (ble.Client, error) {
 	// But in case passing wrong device address or the device went non-connectable, it blocks.
 	cln, err := d.HCI.Dial(ctx, a)
 	if err != nil {
-		return nil, errors.Wrap(err, "device")
+		return nil, err
 	}
 
 	if cln == nil {
-		return nil, fmt.Errorf("device: unexpectedly received nil client")
+		return nil, errors.New("device: unexpectedly received nil client")
 	}
 
 	if d.Server.DB() != nil {
@@ -205,7 +203,7 @@ func (d *Device) Dial(ctx context.Context, a ble.Addr) (ble.Client, error) {
 		cln = gatt.ClientWithServer(gattClient, d.Server.DB())
 	}
 
-	return cln, errors.Wrap(err, "can't dial")
+	return cln, err
 }
 
 // Address returns the listener's device address.

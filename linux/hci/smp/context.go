@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"fmt"
 
 	"github.com/photostorm/ble"
@@ -59,7 +60,7 @@ type pairingContext struct {
 
 func (p *pairingContext) checkConfirm() error {
 	if p == nil {
-		return fmt.Errorf("context nil")
+		return errors.New("context nil")
 	}
 
 	//Cb =f4(PKbx,PKax, Nb, 0 )
@@ -202,11 +203,11 @@ func (p *pairingContext) checkDHKeyCheck() error {
 
 func (p *pairingContext) generateDHKey() error {
 	if p == nil || p.scECDHKeys == nil {
-		return fmt.Errorf("nil keys")
+		return errors.New("nil keys")
 	}
 
 	if p.scRemotePubKey == nil {
-		return fmt.Errorf("missing remote public key")
+		return errors.New("missing remote public key")
 	}
 
 	prv := p.scECDHKeys.private

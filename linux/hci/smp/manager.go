@@ -2,7 +2,7 @@ package smp
 
 import (
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/photostorm/ble"
@@ -101,7 +101,7 @@ func (m *manager) Handle(in []byte) error {
 
 func (m *manager) Pair(authData ble.AuthData, to time.Duration) error {
 	if m.t.pairing.state != Init {
-		return fmt.Errorf("Pairing already in progress")
+		return errors.New("Pairing already in progress")
 	}
 
 	//todo: can this be made less bad??
@@ -130,7 +130,7 @@ func (m *manager) waitResult(to time.Duration) error {
 	case err := <-m.result:
 		return err
 	case <-time.After(to):
-		return fmt.Errorf("pairing operation timed out")
+		return errors.New("pairing operation timed out")
 	}
 }
 

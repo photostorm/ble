@@ -2,7 +2,6 @@ package hci
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/photostorm/ble/cache"
@@ -31,7 +30,7 @@ func (h *HCI) SetConnParams(param cmd.LECreateConnection) error {
 func (h *HCI) EnableSecurity(bm interface{}) error {
 	bondManager, ok := bm.(BondManager)
 	if !ok {
-		return fmt.Errorf("unknown bond manager type")
+		return errors.New("unknown bond manager type")
 	}
 	h.smpEnabled = true
 	if h.smp != nil {

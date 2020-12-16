@@ -1,6 +1,7 @@
 package hci
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 
@@ -82,7 +83,7 @@ func (p *params) init() {
 
 func (p *params) validate() error {
 	if p == nil {
-		return fmt.Errorf("params nil")
+		return errors.New("params nil")
 	}
 	if err := ValidateConnParams(p.connParams); err != nil {
 		return err

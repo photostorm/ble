@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux/hci/cmd"
@@ -108,7 +107,6 @@ func newConn(h *HCI, param evt.LEConnectionComplete) *Conn {
 		for {
 			if err := c.recombine(); err != nil {
 				if err != io.EOF {
-					err = errors.Wrap(err, "recombine")
 					c.hci.dispatchError(err)
 
 					//attempt to cleanup
@@ -150,10 +148,10 @@ func (c *Conn) StartEncryption(ch chan ble.EncryptionChangedInfo) error {
 func (c *Conn) Read(sdu []byte) (n int, err error) {
 	p, ok := <-c.chInPDU
 	if !ok {
-		return 0, errors.Wrap(io.ErrClosedPipe, "input channel closed")
+		return 0, io.ErrClosedPipe
 	}
 	if len(p) == 0 {
-		return 0, errors.Wrap(io.ErrUnexpectedEOF, "received empty packet")
+		return 0, io.ErrUnexpectedEOF
 	}
 
 	// Assume it's a B-Frame.
@@ -165,7 +163,7 @@ func (c *Conn) Read(sdu []byte) (n int, err error) {
 		data = leFrameHdr(p).payload()
 	}
 	if cap(sdu) < slen {
-		return 0, errors.Wrapf(io.ErrShortBuffer, "payload received exceeds sdu buffer")
+		return 0, io.ErrShortBuffer
 	}
 	buf := bytes.NewBuffer(sdu)
 	buf.Reset()
@@ -180,7 +178,7 @@ func (c *Conn) Read(sdu []byte) (n int, err error) {
 // Write breaks down a L2CAP SDU into segmants [Vol 3, Part A, 7.3.1]
 func (c *Conn) Write(sdu []byte) (int, error) {
 	if len(sdu) > c.txMTU {
-		return 0, errors.Wrap(io.ErrShortWrite, "payload exceeds mtu")
+		return 0, io.ErrShortWrite
 	}
 
 	plen := len(sdu)

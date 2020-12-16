@@ -2,7 +2,7 @@ package evt
 
 import (
 	"encoding/binary"
-	"fmt"
+	"errors"
 )
 
 func (e CommandComplete) NumHCICommandPacketsWErr() (uint8, error) {
@@ -153,7 +153,7 @@ func getUint16LE(b []byte, i int, def uint16) (uint16, error) {
 
 func getBytes(bytes []byte, start int, count int) ([]byte, error) {
 	if bytes == nil || start >= len(bytes) {
-		return nil, fmt.Errorf("index error")
+		return nil, errors.New("index error")
 	}
 
 	if count < 0 {
@@ -163,7 +163,7 @@ func getBytes(bytes []byte, start int, count int) ([]byte, error) {
 	end := start + count
 	//end is non-inclusive
 	if end > len(bytes) {
-		return nil, fmt.Errorf("index error")
+		return nil, errors.New("index error")
 	}
 
 	return bytes[start:end], nil

@@ -1,14 +1,12 @@
 package h4
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net"
 	"os"
 	"sync"
 	"time"
-
-	"github.com/pkg/errors"
 )
 
 const (
@@ -81,7 +79,7 @@ func (h *h4) Read(p []byte) (int, error) {
 	case t := <-h.rxQueue:
 		//ok
 		if len(p) < len(t) {
-			return 0, fmt.Errorf("buffer too small")
+			return 0, errors.New("buffer too small")
 		}
 		n = copy(p, t)
 
@@ -94,7 +92,7 @@ func (h *h4) Read(p []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	return n, errors.Wrap(err, "can't read h4")
+	return n, err
 }
 
 func (h *h4) Write(p []byte) (int, error) {
@@ -106,7 +104,7 @@ func (h *h4) Write(p []byte) (int, error) {
 	defer h.wmu.Unlock()
 	n, err := h.rwc.Write(p)
 
-	return n, errors.Wrap(err, "can't write h4")
+	return n, err
 }
 
 func (h *h4) Close() error {
@@ -125,7 +123,7 @@ func (h *h4) Close() error {
 		err := h.rwc.Close()
 		h.rmu.Unlock()
 
-		return errors.Wrap(err, "can't close h4")
+		return err
 	}
 }
 
@@ -192,7 +190,7 @@ func resetAndWaitIdle(rw io.ReadWriter, d time.Duration, eofAsError bool) error 
 			return nil
 		case time.Now().After(to):
 			// timeout, done waiting
-			return fmt.Errorf("timeout waiting for idle state")
+			return errors.New("timeout waiting for idle state")
 		case err == nil && n != 0:
 			// got data, wait again
 			continue

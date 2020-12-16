@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
-	"fmt"
+	"errors"
 	"time"
 
 	"github.com/photostorm/ble/linux/hci"
@@ -112,7 +112,7 @@ func (t *transport) sendPublicKey() error {
 
 func (t *transport) sendPairingRandom() error {
 	if t.pairing == nil {
-		return fmt.Errorf("no pairing context")
+		return errors.New("no pairing context")
 	}
 
 	if t.pairing.localRandom == nil {
@@ -132,7 +132,7 @@ func (t *transport) sendPairingRandom() error {
 
 func (t *transport) sendDHKeyCheck() error {
 	if t.pairing == nil {
-		return fmt.Errorf("no pairing context")
+		return errors.New("no pairing context")
 	}
 
 	p := t.pairing
@@ -173,7 +173,7 @@ func (t *transport) sendDHKeyCheck() error {
 
 func (t *transport) sendMConfirm() error {
 	if t.pairing == nil {
-		return fmt.Errorf("no pairing context")
+		return errors.New("no pairing context")
 	}
 
 	preq := buildPairingReq(t.pairing.request)

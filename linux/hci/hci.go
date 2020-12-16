@@ -2,6 +2,7 @@ package hci
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -9,7 +10,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pkg/errors"
 	"golang.org/x/sys/unix"
 
 	"github.com/photostorm/ble"
@@ -59,7 +59,7 @@ func NewHCI(smp SmpManagerFactory, opts ...ble.Option) (*HCI, error) {
 	}
 	h.params.init()
 	if err := h.Option(opts...); err != nil {
-		return nil, errors.Wrap(err, "can't set options")
+		return nil, err
 	}
 
 	return h, nil
@@ -564,7 +564,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 
 	nr, err := e.NumReportsWErr()
 	if err != nil {
-		ee := h.makeAdvError(errors.Wrap(err, "advRep numReports"), e, true)
+		ee := h.makeAdvError(err, e, true)
 		return ee
 	}
 
@@ -578,7 +578,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 		var et byte
 		et, err = e.EventTypeWErr(i)
 		if err != nil {
-			h.makeAdvError(errors.Wrap(err, "advRep eventType"), e, true)
+			h.makeAdvError(err, e, true)
 			continue
 		}
 
@@ -588,7 +588,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 		case evtTypAdvScanInd: //0x02
 			a, err = newAdvertisement(e, i)
 			if err != nil {
-				h.makeAdvError(errors.Wrap(err, fmt.Sprintf("newAdv (typ %v)", et)), e, true)
+				h.makeAdvError(err, e, true)
 				continue
 			}
 			h.adHist[h.adLast] = a
@@ -602,7 +602,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 		case evtTypScanRsp: //0x04
 			sr, err := newAdvertisement(e, i)
 			if err != nil {
-				h.makeAdvError(errors.Wrap(err, fmt.Sprintf("newAdv (typ %v)", et)), e, true)
+				h.makeAdvError(err, e, true)
 				continue
 			}
 
@@ -620,14 +620,14 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 				//bad addr?
 				addrh, err := h.adHist[idx].addrWErr()
 				if err != nil {
-					h.makeAdvError(errors.Wrap(err, fmt.Sprintf("adHist addr (typ %v)", et)), e, true)
+					h.makeAdvError(err, e, true)
 					break
 				}
 
 				//bad addr?
 				addrsr, err := sr.addrWErr()
 				if err != nil {
-					h.makeAdvError(errors.Wrap(err, fmt.Sprintf("srAddr (typ %v)", et)), e, true)
+					h.makeAdvError(err, e, true)
 					break
 				}
 
@@ -636,7 +636,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 					//this will leave everything alone if there is an error when we attach the scanresp
 					err = h.adHist[idx].setScanResponse(sr)
 					if err != nil {
-						h.makeAdvError(errors.Wrap(err, fmt.Sprintf("setScanResp (typ %v)", et)), e, true)
+						h.makeAdvError(err, e, true)
 						break
 					}
 					a = h.adHist[idx]
@@ -646,7 +646,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 
 			// Got a SR without having received an associated AD before?
 			if a == nil {
-				ee := h.makeAdvError(errors.Wrap(err, fmt.Sprintf("scanRsp (typ %v) w/o associated advData, srAddr %v", et, sr.Addr())), e, true)
+				ee := h.makeAdvError(err, e, true)
 				return ee
 			}
 			// sr
@@ -656,7 +656,7 @@ func (h *HCI) handleLEAdvertisingReport(b []byte) error {
 		case evtTypAdvNonconnInd: //0x03
 			a, err = newAdvertisement(e, i)
 			if err != nil {
-				h.makeAdvError(errors.Wrap(err, fmt.Sprintf("newAdv (typ %v)", et)), e, true)
+				h.makeAdvError(err, e, true)
 				continue
 			}
 

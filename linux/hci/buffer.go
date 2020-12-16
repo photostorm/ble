@@ -2,9 +2,8 @@ package hci
 
 import (
 	"bytes"
+	"errors"
 	"sync"
-
-	"github.com/pkg/errors"
 )
 
 // Pool ...

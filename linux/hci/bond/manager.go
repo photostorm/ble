@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -63,7 +64,7 @@ func (m *manager) Exists(addr string) bool {
 
 func (m *manager) Find(addr string) (hci.BondInfo, error) {
 	if len(addr) != 12 {
-		return nil, fmt.Errorf("invalid address")
+		return nil, errors.New("invalid address")
 	}
 
 	m.lock.RLock()

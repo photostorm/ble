@@ -1,6 +1,7 @@
 package h4
 
 import (
+	"errors"
 	"fmt"
 	"time"
 )
@@ -105,7 +106,7 @@ func (f *frame) waitStart(b []byte) error {
 	}
 
 	if !ok {
-		return fmt.Errorf("couldnt find start byte")
+		return errors.New("couldnt find start byte")
 	}
 
 	bb := make([]byte, len(b[i:]))
@@ -127,7 +128,7 @@ func (f *frame) dataLength() (int, error) {
 
 func (f *frame) eventLength() (int, error) {
 	if len(f.b) < 3 {
-		return 0, fmt.Errorf("not enough bytes")
+		return 0, errors.New("not enough bytes")
 	}
 
 	return int(f.b[2]) + headerLength, nil
@@ -135,7 +136,7 @@ func (f *frame) eventLength() (int, error) {
 
 func (f *frame) aclLength() (int, error) {
 	if len(f.b) < 5 {
-		return 0, fmt.Errorf("not enough bytes")
+		return 0, errors.New("not enough bytes")
 	}
 
 	l := int(f.b[3]) | (int(f.b[4]) << 8)
@@ -149,7 +150,7 @@ func (f *frame) frame() ([]byte, error) {
 	}
 
 	if len(f.b) < tl {
-		return nil, fmt.Errorf("not enough bytes")
+		return nil, errors.New("not enough bytes")
 	}
 	return f.b[:tl], nil
 }

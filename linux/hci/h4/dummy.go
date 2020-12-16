@@ -9,5 +9,5 @@ import (
 
 // NewSocket is a dummy function for non-Linux platform.
 func NewH4() (io.ReadWriteCloser, error) {
-	return nil, fmt.Errorf("only available on linux")
+	return nil, errors.New("only available on linux")
 }

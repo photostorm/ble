@@ -1,9 +1,8 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 )
@@ -180,19 +179,19 @@ var pduDecodeMap = map[byte]pduRecord{
 func getArray(size int, bytes []byte) ([]ble.UUID, error) {
 	//valid size?
 	if size <= 0 {
-		return nil, fmt.Errorf("invalid size")
+		return nil, errors.New("invalid size")
 	}
 
 	//bytes empty/nil?
 	if bytes == nil || len(bytes) == 0 {
-		return nil, fmt.Errorf("nil/empty bytes")
+		return nil, errors.New("nil/empty bytes")
 	}
 
 	//any remainder?
 	count := len(bytes) / size
 	rem := len(bytes) % size
 	if rem != 0 || count == 0 {
-		return nil, fmt.Errorf("incorrect size")
+		return nil, errors.New("incorrect size")
 	}
 
 	//prealloc
@@ -249,7 +248,7 @@ func Parse(pdu []byte) (map[string]interface{}, error) {
 
 				//is this fatal?
 				if err != nil {
-					return nil, errors.Wrap(err, fmt.Sprintf("adv type %v", typ))
+					return nil, err
 				}
 
 				v, ok := m[dec.key].([]ble.UUID)

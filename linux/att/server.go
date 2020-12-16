@@ -3,10 +3,9 @@ package att
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"io"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 )

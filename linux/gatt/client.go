@@ -2,10 +2,9 @@ package gatt
 
 import (
 	"encoding/binary"
+	"errors"
 	"sync"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux/att"

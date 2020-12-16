@@ -2,6 +2,7 @@ package smp
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 
 	"github.com/photostorm/ble/sliceops"
@@ -29,15 +30,15 @@ func smpF4(u, v, x []byte, z uint8) ([]byte, error) {
 func smpF5(w, n1, n2, a1, a2 []byte) ([]byte, []byte, error) {
 	switch {
 	case len(w) != 32:
-		return nil, nil, fmt.Errorf("length error w")
+		return nil, nil, errors.New("length error w")
 	case len(n1) != 16:
-		return nil, nil, fmt.Errorf("length error n1")
+		return nil, nil, errors.New("length error n1")
 	case len(n2) != 16:
-		return nil, nil, fmt.Errorf("length error n2")
+		return nil, nil, errors.New("length error n2")
 	case len(a1) != 7:
-		return nil, nil, fmt.Errorf("length error a1")
+		return nil, nil, errors.New("length error a1")
 	case len(a2) != 7:
-		return nil, nil, fmt.Errorf("length error a2")
+		return nil, nil, errors.New("length error a2")
 	}
 
 	btle := []byte{0x65, 0x6c, 0x74, 0x62}
@@ -76,7 +77,7 @@ func smpF5(w, n1, n2, a1, a2 []byte) ([]byte, []byte, error) {
 
 func smpF6(w, n1, n2, r, ioCap, a1, a2 []byte) ([]byte, error) {
 	if len(w) != 16 || len(n1) != 16 || len(n2) != 16 || len(r) != 16 || len(ioCap) != 3 || len(a1) != 7 || len(a2) != 7 {
-		return nil, fmt.Errorf("length error")
+		return nil, errors.New("length error")
 	}
 
 	// f6(W, N1, N2, R, IOcap, A1, A2) = AES-CMAC W (N1 || N2 || R || IOcap || A1 || A2)
@@ -91,7 +92,7 @@ func smpF6(w, n1, n2, r, ioCap, a1, a2 []byte) ([]byte, error) {
 
 func smpG2(u, v, x, y []byte) (uint32, error) {
 	if len(u) != 32 || len(v) != 32 || len(x) != 16 || len(y) != 16 {
-		return 0, fmt.Errorf("length error")
+		return 0, errors.New("length error")
 	}
 
 	// g2 (U, V, X, Y) = AES-CMAC X (U || V || Y) mod 2^32
@@ -114,7 +115,7 @@ func smpE(key, msg []byte) ([]byte, error) {
 
 	out := aes128(tk, msgMsb)
 	if out == nil {
-		return nil, fmt.Errorf("failed to encrypt message")
+		return nil, errors.New("failed to encrypt message")
 	}
 
 	return sliceops.SwapBuf(out), nil

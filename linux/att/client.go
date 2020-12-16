@@ -2,9 +2,8 @@ package att
 
 import (
 	"encoding/binary"
+	"errors"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 )
@@ -503,7 +502,7 @@ func (c *Client) sendCmd(b []byte) error {
 
 func (c *Client) sendReq(b []byte) (rsp []byte, err error) {
 	if _, err := c.l2c.Write(b); err != nil {
-		return nil, errors.Wrap(err, "send ATT request failed")
+		return nil, err
 	}
 	for {
 		select {
@@ -519,12 +518,12 @@ func (c *Client) sendReq(b []byte) (rsp []byte, err error) {
 
 			_, err := c.l2c.Write(errRsp)
 			if err != nil {
-				return nil, errors.Wrap(err, "unexpected ATT response received")
+				return nil, err
 			}
 		case err := <-c.chErr:
-			return nil, errors.Wrap(err, "ATT request failed")
+			return nil, err
 		case <-time.After(2 * time.Second):
-			return nil, errors.Wrap(ErrSeqProtoTimeout, "ATT request timeout")
+			return nil, err
 		}
 	}
 
@@ -538,7 +537,7 @@ func (c *Client) sendResp(rsp []byte) error {
 		return errors.New("ble conn was nil")
 	}
 	if _, err := c.l2c.Write(rsp); err != nil {
-		return errors.Wrap(err, "send ATT request failed")
+		return err
 	}
 
 	return nil

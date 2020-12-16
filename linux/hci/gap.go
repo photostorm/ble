@@ -2,10 +2,9 @@ package hci
 
 import (
 	"context"
+	"errors"
 	"net"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/linux/adv"
@@ -254,10 +253,10 @@ func (h *HCI) cancelDial() (ble.Client, error) {
 		case c := <-h.chMasterConn:
 			return gatt.NewClient(c, h.cache, h.done)
 		case <-time.After(50 * time.Millisecond):
-			return nil, errors.Wrap(err, "cancel connection failed")
+			return nil, err
 		}
 	}
-	return nil, errors.Wrap(err, "cancel connection failed")
+	return nil, err
 }
 
 // Advertise starts advertising.

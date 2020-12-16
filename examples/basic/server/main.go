@@ -2,12 +2,11 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"time"
-
-	"github.com/pkg/errors"
 
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/examples/lib"

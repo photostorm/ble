@@ -1,9 +1,8 @@
 package ble
 
 import (
+	"errors"
 	"fmt"
-
-	"github.com/pkg/errors"
 )
 
 // ErrEIRPacketTooLong is the error returned when an AdvertisingPacket

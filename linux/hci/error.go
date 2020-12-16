@@ -1,6 +1,6 @@
 package hci
 
-import "github.com/pkg/errors"
+import "errors"
 
 // errors
 var (

@@ -3,6 +3,7 @@ package smp
 import (
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 	"fmt"
 
 	"github.com/photostorm/ble/linux/hci"
@@ -49,7 +50,7 @@ func smpOnPairingResponse(t *transport, in pdu) ([]byte, error) {
 	if t.pairing.pairingType == Oob &&
 		len(t.pairing.authData.OOBData) == 0 {
 		t.pairing.state = Error
-		return nil, fmt.Errorf("pairing requires OOB data but OOB data not specified")
+		return nil, errors.New("pairing requires OOB data but OOB data not specified")
 	}
 
 	if t.pairing.legacy {
@@ -61,11 +62,11 @@ func smpOnPairingResponse(t *transport, in pdu) ([]byte, error) {
 
 func smpOnPairingConfirm(t *transport, in pdu) ([]byte, error) {
 	if t.pairing == nil {
-		return nil, fmt.Errorf("no pairing context")
+		return nil, errors.New("no pairing context")
 	}
 
 	if len(in) != 16 {
-		return nil, fmt.Errorf("invalid length")
+		return nil, errors.New("invalid length")
 	}
 
 	t.pairing.remoteConfirm = in
@@ -80,11 +81,11 @@ func smpOnPairingConfirm(t *transport, in pdu) ([]byte, error) {
 
 func smpOnPairingRandom(t *transport, in pdu) ([]byte, error) {
 	if t.pairing == nil {
-		return nil, fmt.Errorf("no pairing context")
+		return nil, errors.New("no pairing context")
 	}
 
 	if len(in) != 16 {
-		return nil, fmt.Errorf("invalid length")
+		return nil, errors.New("invalid length")
 	}
 
 	t.pairing.remoteRandom = in
@@ -155,17 +156,17 @@ func onLegacyRandom(t *transport) ([]byte, error) {
 
 func smpOnPairingPublicKey(t *transport, in pdu) ([]byte, error) {
 	if t.pairing == nil {
-		return nil, fmt.Errorf("no pairing context")
+		return nil, errors.New("no pairing context")
 	}
 
 	if len(in) != 64 {
-		return nil, fmt.Errorf("invalid length")
+		return nil, errors.New("invalid length")
 	}
 
 	pubk, ok := UnmarshalPublicKey(in)
 
 	if !ok {
-		return nil, fmt.Errorf("key error")
+		return nil, errors.New("key error")
 	}
 
 	t.pairing.scRemotePubKey = pubk
@@ -178,7 +179,7 @@ func smpOnPairingPublicKey(t *transport, in pdu) ([]byte, error) {
 
 func smpOnDHKeyCheck(t *transport, in pdu) ([]byte, error) {
 	if t.pairing == nil {
-		return nil, fmt.Errorf("no pairing context")
+		return nil, errors.New("no pairing context")
 	}
 
 	t.pairing.scRemoteDHKeyCheck = in

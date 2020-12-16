@@ -3,8 +3,6 @@ package adv
 import (
 	"encoding/binary"
 
-	"github.com/pkg/errors"
-
 	"github.com/photostorm/ble"
 	"github.com/photostorm/ble/parser"
 )
@@ -70,7 +68,7 @@ func NewRawPacket(bytes ...[]byte) (*Packet, error) {
 	//decode the bytes
 	m, err := parser.Parse(b)
 	if err != nil {
-		return nil, errors.Wrap(err, "pdu decode")
+		return nil, err
 	}
 
 	p := &Packet{b: b, m: m}

@@ -28,10 +28,10 @@ var curr struct {
 }
 
 var (
-	errNotConnected = fmt.Errorf("not connected")
-	errNoProfile    = fmt.Errorf("no profile")
-	errNoUUID       = fmt.Errorf("no UUID")
-	errInvalidUUID  = fmt.Errorf("invalid UUID")
+	errNotConnected = errors.New("not connected")
+	errNoProfile    = errors.New("no profile")
+	errNoUUID       = errors.New("no UUID")
+	errInvalidUUID  = errors.New("invalid UUID")
 )
 
 func main() {
@@ -250,7 +250,7 @@ func cmdConnect(c *cli.Context) error {
 		fmt.Printf("Dialing to implicit address: %s\n", curr.addr)
 		cln, err = ble.Dial(ctx, curr.addr)
 	} else {
-		return fmt.Errorf("no filter specified, and cached peripheral address")
+		return errors.New("no filter specified, and cached peripheral address")
 	}
 	if err == nil {
 		curr.client = cln
