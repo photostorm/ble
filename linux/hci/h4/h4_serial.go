@@ -12,7 +12,7 @@ import (
 func DefaultSerialOptions() serial.OpenOptions {
 	return serial.OpenOptions{
 		PortName:              "/dev/ttyACM0",
-		BaudRate:              1000000,
+		BaudRate:              115200,
 		DataBits:              8,
 		ParityMode:            serial.PARITY_NONE,
 		StopBits:              1,
