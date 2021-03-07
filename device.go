@@ -1,6 +1,8 @@
 package ble
 
-import "context"
+import (
+	"context"
+)
 
 // Device ...
 type Device interface {
@@ -24,6 +26,10 @@ type Device interface {
 	// It tres to fit the UUIDs in the advertising packet as much as possi
 	// If name doesn't fit in the advertising packet, it will be put in scan response.
 	AdvertiseNameAndServices(ctx context.Context, name string, uuids ...UUID) error
+
+	// AdvertiseNameAndIBeaconData advertises device name and the given manufacturer data
+	// If name doesn't fit in the advertising data, it will be put in scan response.
+	AdvertiseNameAndIBeaconData(ctx context.Context, name string, md []byte) error
 
 	// AdvertiseMfgData avertises the given manufacturer data.
 	AdvertiseMfgData(ctx context.Context, id uint16, b []byte) error

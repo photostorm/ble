@@ -131,6 +131,17 @@ func (d *Device) AdvertiseNameAndServices(ctx context.Context, name string, uuid
 	return ctx.Err()
 }
 
+// AdvertiseNameAndIBeaconData advertises device name and the given manufacturer data
+// If name doesn't fit in the advertising data, it will be put in scan response.
+func (d *Device) AdvertiseNameAndIBeaconData(ctx context.Context, name string, md []byte) error {
+	if err := d.HCI.AdvertiseNameAndIBeaconData(name, md); err != nil {
+		return err
+	}
+	<-ctx.Done()
+	d.HCI.StopAdvertising()
+	return ctx.Err()
+}
+
 // AdvertiseMfgData avertises the given manufacturer data.
 func (d *Device) AdvertiseMfgData(ctx context.Context, id uint16, b []byte) error {
 	if err := d.HCI.AdvertiseMfgData(id, b); err != nil {
