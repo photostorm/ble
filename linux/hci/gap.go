@@ -128,12 +128,12 @@ func (h *HCI) AdvertiseNameAndServices(name string, uuids ...ble.UUID) error {
 // AdvertiseNameAndIBeaconData advertises device name and the given manufacturer data
 // If name doesn't fit in the advertising data, it will be put in scan response.
 func (h *HCI) AdvertiseNameAndIBeaconData(name string, md []byte) error {
-	ad, err := adv.NewPacket(adv.Flags(adv.FlagGeneralDiscoverable | adv.FlagLEOnly), adv.IBeaconData(md))
+	ad, err := adv.NewPacket(adv.Flags(adv.FlagGeneralDiscoverable|adv.FlagLEOnly), adv.IBeaconData(md))
 	if err != nil {
 		return err
 	}
 
-	sr, _ := adv.NewPacket(adv.IBeaconData(md))
+	sr, _ := adv.NewPacket()
 	switch {
 	case ad.Append(adv.CompleteName(name)) == nil:
 	case sr.Append(adv.CompleteName(name)) == nil:
